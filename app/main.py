@@ -4,7 +4,8 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from typing import List
-from app.mongo import db
+from bson.objectid import ObjectId
+from app.mongo import collection
 
 app = FastAPI()
 
@@ -14,7 +15,7 @@ class PageData(BaseModel):
 
 @app.post("/")
 async def save_images(pageData: PageData):
-    new_site_data = await db.site_images.insert_one(jsonable_encoder(pageData))
-    created_document = await db.site_images.find_one({"_id": str(new_site_data.inserted_id)})
-    print(created_document)
+    new_site_data = await collection.insert_one(jsonable_encoder(pageData))
+    created_document = await collection.find_one({"_id": new_site_data.inserted_id})
+    created_document["_id"] = str(created_document["_id"])
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_document)
