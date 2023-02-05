@@ -1,4 +1,4 @@
-from lib2to3.pytree import Base
+from datetime import datetime
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -12,6 +12,7 @@ app = FastAPI()
 class PageData(BaseModel):
     url: str
     images: List[str]
+    timestamp: datetime
 
 @app.post("/")
 async def save_images(pageData: PageData):
