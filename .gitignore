@@ -1,2 +1,4 @@
 /backend/
 app/env.py
+/ctrl-backend/
+app/__pycache__/
