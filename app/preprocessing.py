@@ -25,13 +25,15 @@ def _featurize_face(face_dict:dict) -> dict:
     features['mouth_to_eyes'] = np.sqrt((y_eyes - y_mouth)**2 + (x_eyes - x_mouth)**2)/face_dict['box'][3]
     return features
 
-def preprocess(image_url_list:list) -> pd.DataFrame:
+def preprocess(image_url_list:List[str]) -> pd.DataFrame:
     """Using site images, creates pandas dataframe that will be used to cluster faces."""
     dataset = []
     for image_url in image_url_list:
         faces = _face_detect(image_url)
         for face in faces:
             dataset.append(_featurize_face(face))
-    return pd.DataFrame.from_dict(dataset)
+    dataset = pd.DataFrame.from_dict(dataset)
+    dataset['url'] = image_url_list
+    return dataset
 
 print(preprocess(["D:\All\Fotos\WhatsApp Image 2021-03-07 at 13.23.42.jpeg"]))
