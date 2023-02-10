@@ -3,13 +3,19 @@ import cv2
 import numpy as np
 import pandas as pd
 from typing import List
+from PIL import Image
+from io import BytesIO
 
 detector = MTCNN()
 
 def _face_detect(url:str) -> List[dict]:
     """Uses a MTCNN implementation to extract facial landmarks from a picture."""
-    img = cv2.cvtColor(cv2.imread(url), cv2.COLOR_BGR2RGB)
-    return detector.detect_faces(img)
+    try:
+        img = Image.open(BytesIO(url))
+        img = cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2RGB)
+        return detector.detect_faces(img)
+    except:
+        return []
 
 def _featurize_face(face_dict:dict) -> dict:
     """Converts face landmarks into features through feature engineering."""
@@ -31,9 +37,10 @@ def preprocess(image_url_list:List[str]) -> pd.DataFrame:
     for image_url in image_url_list:
         faces = _face_detect(image_url)
         for face in faces:
-            dataset.append(_featurize_face(face))
+            featurized_face = _featurize_face(face)
+            featurized_face['url'] = image_url
+            dataset.append()
+            
     dataset = pd.DataFrame.from_dict(dataset)
-    dataset['url'] = image_url_list
-    return dataset
 
-print(preprocess(["D:\All\Fotos\WhatsApp Image 2021-03-07 at 13.23.42.jpeg"]))
+    return dataset

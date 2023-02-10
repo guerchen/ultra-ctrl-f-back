@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 from app.mongo import collection
 from app.preprocessing import preprocess
 from app.model import find_similar
+from pymongo import DESCENDING
 
 app = FastAPI()
 
@@ -29,7 +30,7 @@ async def save_images(pageData: PageData):
 
 @app.post("/compare")
 async def compare_images(compareData: CompareData):
-    page_images = await collection.find({"url": compareData.url})
-    preprocessed_images = preprocess(page_images)
+    page_images = await collection.find({"url": compareData.url}).sort("timestamp", DESCENDING).to_list(1)
+    preprocessed_images = preprocess(page_images[0]['images']) #Returning empty
     similar_images = preprocessed_images.loc[find_similar(preprocessed_images.drop('url'))]
     return JSONResponse(status_code=200, content={list(similar_images['url'])})

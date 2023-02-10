@@ -1,4 +1,3 @@
-from msilib.schema import Error
 from sklearn.cluster import DBSCAN
 import pandas as pd
 from typing import List
