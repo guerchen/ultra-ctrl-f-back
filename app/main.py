@@ -21,7 +21,7 @@ class CompareData(BaseModel):
     url: str
     reference_image: str
 
-@app.post("/")
+@app.post("/save")
 async def save_images(pageData: PageData):
     new_site_data = await collection.insert_one(jsonable_encoder(pageData))
     created_document = await collection.find_one({"_id": new_site_data.inserted_id})
