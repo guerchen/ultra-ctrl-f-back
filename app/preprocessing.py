@@ -5,17 +5,18 @@ import pandas as pd
 from typing import List
 from PIL import Image
 from io import BytesIO
+from urllib.request import urlopen
 
 detector = MTCNN()
 
 def _face_detect(url:str) -> List[dict]:
     """Uses a MTCNN implementation to extract facial landmarks from a picture."""
-    try:
-        img = Image.open(BytesIO(url))
-        img = cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2RGB)
-        return detector.detect_faces(img)
-    except:
-        return []
+    with urlopen(url) as url:
+        file = BytesIO(url.read())
+        img = np.array(Image.open(file))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    return detector.detect_faces(img)
 
 def _featurize_face(face_dict:dict) -> dict:
     """Converts face landmarks into features through feature engineering."""
@@ -34,13 +35,14 @@ def _featurize_face(face_dict:dict) -> dict:
 def preprocess(image_url_list:List[str]) -> pd.DataFrame:
     """Using site images, creates pandas dataframe that will be used to cluster faces."""
     dataset = []
+
     for image_url in image_url_list:
         faces = _face_detect(image_url)
         for face in faces:
             featurized_face = _featurize_face(face)
             featurized_face['url'] = image_url
-            dataset.append()
+            dataset.append(featurized_face)
             
     dataset = pd.DataFrame.from_dict(dataset)
-
+    
     return dataset
