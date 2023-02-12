@@ -2,6 +2,7 @@ from datetime import datetime
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from bson.objectid import ObjectId
@@ -11,6 +12,14 @@ from app.model import find_similar
 from pymongo import DESCENDING
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class PageData(BaseModel):
     url: str
