@@ -41,6 +41,9 @@ async def save_images(pageData: PageData):
 async def compare_images(compareData: CompareData):
     page_images = await collection.find({"url": compareData.url}).sort("timestamp", DESCENDING).to_list(1)
     preprocessed_images = preprocess(page_images[0]['images'])
-    similar_index = find_similar(compareData.reference_image, preprocessed_images.drop(columns='url'))
-    similar_images = preprocessed_images['url'].loc[similar_index].drop_duplicates().values
-    return JSONResponse(status_code=200, content={"similar":list(similar_images)})
+    try:
+        similar_index = find_similar(compareData.reference_image, preprocessed_images.drop(columns='url'))
+        similar_images = preprocessed_images['url'].loc[similar_index].drop_duplicates().values
+        return JSONResponse(status_code=200, content={"similar":list(similar_images)})
+    except Exception as error:
+        return JSONResponse(status_code=400, content={"error":str(error)})
