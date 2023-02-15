@@ -7,3 +7,7 @@ client = motor.motor_asyncio.AsyncIOMotorClient(
 
 db = client.site_images
 collection = db.SiteImages
+
+def daily_site_image_array():
+    #TODO: Query DB to get all images saved to a specific domain
+    pass
