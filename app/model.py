@@ -10,7 +10,7 @@ def _cluster(dataset:pd.DataFrame) -> object:
 
 def _preprocess_reference(image:str) -> pd.DataFrame:
     """Converts image url into clusterable dictionary."""
-    reference_face = _face_detect(image)
+    reference_face = _face_detect(image,reference_image=True)
 
     if len(reference_face) != 1:
         raise Exception('Incorrect number of faces in reference image')
