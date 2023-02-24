@@ -1,12 +1,8 @@
 from sklearn.cluster import DBSCAN
 import pandas as pd
+import numpy as np
 from typing import List
 from app.preprocessing import _face_detect, _featurize_face
-
-def _cluster(dataset:pd.DataFrame) -> object:
-    """Returns clustered object already fitted with dataset."""
-
-    return DBSCAN(min_samples=2).fit_predict(dataset)
 
 def _preprocess_reference(image:str) -> pd.DataFrame:
     """Converts image url into clusterable dictionary."""
@@ -19,13 +15,11 @@ def _preprocess_reference(image:str) -> pd.DataFrame:
 
 def find_similar(reference_image:str, dataset:pd.DataFrame) -> List[int]:
     """Finds most similar faces within dataset of faces. Returns index of similar images."""
-    preprocessed_reference = _preprocess_reference(reference_image)
+    preprocessed_reference = np.array(_preprocess_reference(reference_image))
+    dataset_matrix = np.array(dataset)
 
-    dataset = pd.concat([dataset,preprocessed_reference], ignore_index=True)
-    dataset['cluster'] = _cluster(dataset)
-    interest_cluster = dataset['cluster'].tail(1).item()
-    dataset = dataset.iloc[:-1]
-
-    return dataset[dataset.cluster == interest_cluster].index
+    similarity_vector = np.inner(preprocessed_reference,dataset_matrix)
+    dataset['similarity'] = similarity_vector[0]
+    index = dataset.sort_values(by=['similarity'],ascending=False).index[:5]
+    return index
     
-
